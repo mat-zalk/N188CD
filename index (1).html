@@ -2,32 +2,56 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>N188CD Logbook</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>N350W Logbook</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    input[type="number"]::-webkit-inner-spin-button,
-    input[type="number"]::-webkit-outer-spin-button {
-      opacity: 1;
-      height: 32px;
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
   </style>
 </head>
 <body class="bg-slate-900 text-white min-h-screen">
-  <div class="max-w-md mx-auto p-4 pb-20">
+  <div class="max-w-md mx-auto p-4">
     
     <!-- Header -->
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center justify-between mb-6">
       <div class="flex items-center gap-3">
         <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
         </svg>
         <div>
-          <h1 class="text-xl font-bold">N188CD</h1>
-          <p class="text-slate-400 text-sm">TBM 900</p>
+          <h1 class="text-xl font-bold">N350W</h1>
+          <p class="text-slate-400 text-sm">Piper M350</p>
         </div>
       </div>
-      <span id="pilotBadge" class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">Mat</span>
+      <div id="pilotBadge" class="bg-blue-600 rounded-lg px-3 py-1 text-sm font-semibold">
+        --
+      </div>
+    </div>
+    
+    <!-- Hidden pilot value set by URL -->
+    <input type="hidden" id="pilot" value="">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="hidden bg-green-600 rounded-lg p-3 mb-4 flex items-center gap-2">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+      </svg>
+      <span id="toastMessage"></span>
+    </div>
+
+    <!-- Error Notification -->
+    <div id="error" class="hidden bg-red-600 rounded-lg p-3 mb-4 flex items-center gap-2">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+      <span id="errorMessage"></span>
     </div>
 
     <!-- Status Card -->
@@ -73,65 +97,60 @@
 
     <!-- Log Flight Tab -->
     <div id="panelLog" class="space-y-4">
-      <input type="hidden" id="pilot" value="mat">
-      
-      <!-- Fuel Entry -->
-      <div class="bg-slate-800 rounded-xl p-4">
-        <h3 class="font-medium mb-3 flex items-center gap-2">
-          <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="bg-slate-800 rounded-xl p-4 space-y-4">
+        <h2 class="font-semibold flex items-center gap-2">
+          <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
           </svg>
-          Ending Fuel (gallons)
-        </h3>
-        <div class="grid grid-cols-2 gap-4">
+          Post-Flight Entry
+        </h2>
+        
+        <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-sm text-slate-400 mb-1">Left Tank</label>
-            <input type="number" id="fuelLeft" step="1" placeholder="0"
-                   class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-lg focus:border-blue-500 focus:outline-none">
+            <label class="block text-sm text-slate-400 mb-1">Left Tank (gal)</label>
+            <input type="number" id="fuelLeft" step="1" placeholder="28" 
+                   class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-lg font-mono focus:border-blue-500 focus:outline-none">
           </div>
           <div>
-            <label class="block text-sm text-slate-400 mb-1">Right Tank</label>
-            <input type="number" id="fuelRight" step="1" placeholder="0"
-                   class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-lg focus:border-blue-500 focus:outline-none">
+            <label class="block text-sm text-slate-400 mb-1">Right Tank (gal)</label>
+            <input type="number" id="fuelRight" step="1" placeholder="31"
+                   class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-lg font-mono focus:border-blue-500 focus:outline-none">
           </div>
         </div>
-      </div>
-
-      <!-- Hobbs Entry -->
-      <div class="bg-slate-800 rounded-xl p-4">
-        <h3 class="font-medium mb-3 flex items-center gap-2">
-          <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-          Ending Hobbs
-        </h3>
-        <input type="number" id="hobbs" step="0.1" placeholder="0.0"
-               class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-3 text-2xl font-mono focus:border-blue-500 focus:outline-none"
-               oninput="updateFlightTimePreview()">
-        <div id="flightTimePreview" class="mt-2 text-sm text-slate-400 hidden">
-          Flight time: <span id="previewHours" class="text-blue-400 font-mono">--</span> hours
+        
+        <div>
+          <label class="block text-sm text-slate-400 mb-1">Ending Hobbs</label>
+          <input type="number" id="hobbs" step="0.1" placeholder="1843.8"
+                 class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-lg font-mono focus:border-blue-500 focus:outline-none"
+                 oninput="updateFlightTime()">
+          <p id="flightTimePreview" class="text-sm text-slate-400 mt-1 hidden"></p>
         </div>
-      </div>
+        
+        <!-- Optional fields for MyFlightbook export -->
+        <div class="pt-2 border-t border-slate-700">
+          <p class="text-xs text-slate-500 mb-2">Optional (for logbook export)</p>
+          <div class="space-y-2">
+            <input type="text" id="route" placeholder="Route (e.g., KTUL-KLIT-KTUL)"
+                   class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none">
+            <input type="text" id="comments" placeholder="Comments"
+                   class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none">
+          </div>
+        </div>
 
-      <!-- Route & Comments (Optional) -->
-      <div class="bg-slate-800 rounded-xl p-4">
-        <h3 class="font-medium mb-3 flex items-center gap-2">
-          <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
-          </svg>
-          Route & Comments (optional)
-        </h3>
-        <input type="text" id="route" placeholder="e.g., KRVS-KDFW-KRVS"
-               class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 mb-2 focus:border-blue-500 focus:outline-none">
-        <input type="text" id="comments" placeholder="Comments for logbook"
-               class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 focus:border-blue-500 focus:outline-none">
-      </div>
+        <!-- Ferry Flight Option -->
+        <div class="flex items-center gap-3 pt-2">
+          <input type="checkbox" id="ferryFlight" 
+                 class="w-5 h-5 rounded bg-slate-700 border-slate-600 text-amber-500 focus:ring-amber-500 focus:ring-offset-slate-800">
+          <label for="ferryFlight" class="text-sm text-slate-300">
+            Ferry flight <span class="text-slate-500">(no billing)</span>
+          </label>
+        </div>
 
-      <!-- Submit Button -->
-      <button onclick="submitFlight()" id="btnSubmit"
-              class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 rounded-xl px-4 py-3 font-medium text-lg transition">
-        Log Flight
-      </button>
+        <button onclick="submitFlight()" id="btnFlight"
+                class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 rounded-lg py-3 font-semibold transition">
+          Log Flight
+        </button>
+      </div>
     </div>
 
     <!-- Extras Tab (Receipts) -->
@@ -212,7 +231,7 @@
             <span id="report365" class="font-mono">--</span>
           </div>
           <div class="flex justify-between py-1">
-            <span class="text-slate-400">TBM 900 Time (Total)</span>
+            <span class="text-slate-400">PA46 Time (Total)</span>
             <span id="reportTotal" class="font-mono font-bold text-blue-400">--</span>
           </div>
         </div>
@@ -232,7 +251,7 @@
         <div class="space-y-3">
           <div>
             <label class="block text-sm text-slate-400 mb-1">Target Total Gallons</label>
-            <input type="number" id="fuelTarget" step="1" placeholder="e.g., 250"
+            <input type="number" id="fuelTarget" step="1" placeholder="e.g., 80"
                    class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 focus:border-blue-500 focus:outline-none"
                    oninput="calculateFuel()">
           </div>
@@ -279,7 +298,7 @@
               <span id="oilChangeRemaining" class="font-mono">--</span>
             </div>
             <div class="flex gap-2 mt-2 pt-2 border-t border-slate-600">
-              <input type="number" id="oilChangeHours" step="1" placeholder="Hours (e.g., 50)"
+              <input type="number" id="oilChangeHours" step="1" placeholder="Hours (e.g., 35)"
                      class="flex-1 bg-slate-600 border border-slate-500 rounded px-2 py-1 text-sm focus:border-blue-500 focus:outline-none">
               <button onclick="setOilChange()" class="bg-slate-600 hover:bg-slate-500 rounded px-3 py-1 text-sm">
                 Set Next
@@ -307,32 +326,66 @@
       </div>
     </div>
 
-  </div>
-
-  <!-- Toast Notification -->
-  <div id="toast" class="fixed bottom-4 left-4 right-4 bg-green-600 text-white px-4 py-3 rounded-xl shadow-lg transform translate-y-full transition-transform duration-300 z-50">
-    <p id="toastMessage">Success!</p>
+    <!-- Footer -->
+    <div class="mt-6 text-center text-xs text-slate-500">
+      N350W LLC • Mat & Dan
+    </div>
   </div>
 
   <script>
     // =========================================================================
     // CONFIGURATION - UPDATE THIS URL AFTER DEPLOYING APPS SCRIPT
     // =========================================================================
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx6g4v4ZqyUzxY-bJ9CsKJH15zZoclznFHdqIrm_mM7n2o38bwvPnaPHSTgX1kSRm7t6A/exec';
-
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxH1yruLRuTMKqW8wsj8vBdgaU36uiv03PTkXIaJrZfbxULZSjv6W6NITDcDQ6fDJFTPg/exec';
+    
     // =========================================================================
     // STATE
     // =========================================================================
-    let currentStatus = { hobbs: 0, fuelLeft: 0, fuelRight: 0, oilChangeDue: 0, annualDue: '', squawks: [] };
-    let currentPilot = 'mat';
+    let currentStatus = {
+      hobbs: 0,
+      fuelLeft: 0,
+      fuelRight: 0,
+      oilChangeDue: 0,
+      annualDue: '',
+      squawks: []
+    };
+    
+    let currentPilot = '';
 
     // =========================================================================
     // INITIALIZATION
     // =========================================================================
     document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('pilot').value = 'mat';
-      document.getElementById('pilotBadge').textContent = 'Mat';
+      // Get pilot from URL parameter
+      const urlParams = new URLSearchParams(window.location.search);
+      currentPilot = urlParams.get('pilot')?.toLowerCase();
       
+      if (!currentPilot || (currentPilot !== 'mat' && currentPilot !== 'dan')) {
+        // Show error - no valid pilot specified
+        document.body.innerHTML = `
+          <div class="min-h-screen bg-slate-900 text-white flex items-center justify-center p-4">
+            <div class="bg-slate-800 rounded-xl p-6 max-w-sm text-center">
+              <svg class="w-12 h-12 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+              </svg>
+              <h1 class="text-xl font-bold mb-2">Invalid Link</h1>
+              <p class="text-slate-400 mb-4">Please use your personalized link:</p>
+              <div class="space-y-2 text-sm">
+                <div class="bg-slate-700 rounded p-2">Mat's Link:<br><code class="text-blue-400">?pilot=mat</code></div>
+                <div class="bg-slate-700 rounded p-2">Dan's Link:<br><code class="text-blue-400">?pilot=dan</code></div>
+              </div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+      
+      // Set pilot in hidden field and badge
+      document.getElementById('pilot').value = currentPilot;
+      const pilotName = currentPilot === 'mat' ? 'Mat' : 'Dan';
+      document.getElementById('pilotBadge').textContent = pilotName;
+      
+      // Load status from server
       loadStatus();
       
       // Auto-refresh every 60 seconds
@@ -341,9 +394,6 @@
       }, 60000);
     });
 
-    // =========================================================================
-    // STATUS
-    // =========================================================================
     async function loadStatus() {
       try {
         const response = await fetch(APPS_SCRIPT_URL);
@@ -356,6 +406,7 @@
           if (data.lastUpdate) {
             const lastUpdateRow = document.getElementById('lastUpdateRow');
             const lastUpdateText = document.getElementById('lastUpdateText');
+            const pilotName = data.lastUpdate.pilot === 'mat' ? 'Mat' : 'Dan';
             const hoursAgo = data.lastUpdate.hoursAgo;
             
             let timeText;
@@ -370,7 +421,7 @@
               timeText = daysAgo === 1 ? '1 day ago' : `${daysAgo} days ago`;
             }
             
-            lastUpdateText.textContent = `Last flight: ${timeText}`;
+            lastUpdateText.textContent = `Last flight: ${pilotName}, ${timeText}`;
             lastUpdateRow.classList.remove('hidden');
           }
         }
@@ -380,103 +431,113 @@
       }
     }
 
+    // =========================================================================
+    // UI UPDATES
+    // =========================================================================
     function updateStatusDisplay() {
-      document.getElementById('statusHobbs').textContent = currentStatus.hobbs?.toFixed(1) || '--';
-      document.getElementById('statusFuel').textContent = 
-        ((currentStatus.fuelLeft || 0) + (currentStatus.fuelRight || 0)) || '--';
+      document.getElementById('statusHobbs').textContent = currentStatus.hobbs.toFixed(1);
+      document.getElementById('statusFuel').textContent = (currentStatus.fuelLeft + currentStatus.fuelRight);
       
-      const oilRemaining = (currentStatus.oilChangeDue || 0) - (currentStatus.hobbs || 0);
-      document.getElementById('statusOil').textContent = oilRemaining > 0 ? oilRemaining.toFixed(0) : '--';
+      const oilRemaining = currentStatus.oilChangeDue - currentStatus.hobbs;
+      const oilEl = document.getElementById('statusOil');
+      oilEl.textContent = oilRemaining.toFixed(0);
+      oilEl.className = `text-2xl font-mono font-bold ${oilRemaining < 5 ? 'text-red-400' : 'text-green-400'}`;
       
       document.getElementById('statusFuelDetail').textContent = 
-        `Fuel: L ${currentStatus.fuelLeft || '--'} / R ${currentStatus.fuelRight || '--'}`;
+        `Fuel: L ${currentStatus.fuelLeft} / R ${currentStatus.fuelRight}`;
+      document.getElementById('statusAnnual').textContent = 
+        `Annual: ${currentStatus.annualDue}`;
       
-      if (currentStatus.annualDue) {
-        const annualDate = new Date(currentStatus.annualDue);
-        document.getElementById('statusAnnual').textContent = 
-          `Annual: ${annualDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`;
+      // Update squawks list
+      const squawkList = document.getElementById('squawkList');
+      if (currentStatus.squawks && currentStatus.squawks.length > 0) {
+        squawkList.innerHTML = currentStatus.squawks.map(sq => `
+          <div class="bg-slate-700 rounded-lg p-3">
+            <div class="text-xs text-slate-400 mb-1">${sq.date} (${sq.pilot})</div>
+            <div class="text-sm">${sq.text}</div>
+          </div>
+        `).join('');
+      } else {
+        squawkList.innerHTML = '<p class="text-slate-400 text-sm">No open squawks</p>';
       }
-      
-      updateSquawkList();
     }
 
-    function updateSquawkList() {
-      const list = document.getElementById('squawkList');
-      if (!currentStatus.squawks || currentStatus.squawks.length === 0) {
-        list.innerHTML = '<p class="text-slate-400 text-sm">No open squawks</p>';
-        return;
-      }
+    function updateFlightTime() {
+      const hobbsInput = parseFloat(document.getElementById('hobbs').value);
+      const preview = document.getElementById('flightTimePreview');
       
-      list.innerHTML = currentStatus.squawks.map(s => `
-        <div class="bg-slate-700 rounded-lg p-2 text-sm">
-          <div class="text-slate-400 text-xs">${s.date}</div>
-          <div>${s.text}</div>
-        </div>
-      `).join('');
+      if (hobbsInput && hobbsInput > currentStatus.hobbs) {
+        const flightTime = hobbsInput - currentStatus.hobbs;
+        preview.textContent = `Flight time: ${flightTime.toFixed(1)} hrs`;
+        preview.classList.remove('hidden');
+      } else {
+        preview.classList.add('hidden');
+      }
     }
 
-    // =========================================================================
-    // TAB NAVIGATION
-    // =========================================================================
     function showTab(tab) {
+      // Hide all panels
       document.getElementById('panelLog').classList.add('hidden');
       document.getElementById('panelExtras').classList.add('hidden');
       document.getElementById('panelSquawks').classList.add('hidden');
       document.getElementById('panelReports').classList.add('hidden');
       
+      // Reset all tabs
       document.getElementById('tabLog').className = 'flex-1 py-2 px-3 rounded-md text-sm font-medium transition text-slate-400 hover:text-white';
       document.getElementById('tabExtras').className = 'flex-1 py-2 px-3 rounded-md text-sm font-medium transition text-slate-400 hover:text-white';
       document.getElementById('tabSquawks').className = 'flex-1 py-2 px-3 rounded-md text-sm font-medium transition text-slate-400 hover:text-white';
       document.getElementById('tabReports').className = 'flex-1 py-2 px-3 rounded-md text-sm font-medium transition text-slate-400 hover:text-white';
       
+      // Show selected
       document.getElementById('panel' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.remove('hidden');
       document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).className = 
         'flex-1 py-2 px-3 rounded-md text-sm font-medium transition bg-blue-600 text-white';
       
+      // Load pilot report when switching to reports tab
       if (tab === 'reports') {
         loadPilotReport();
       }
     }
 
-    // =========================================================================
-    // FLIGHT TIME PREVIEW
-    // =========================================================================
-    function updateFlightTimePreview() {
-      const hobbs = parseFloat(document.getElementById('hobbs').value);
-      const preview = document.getElementById('flightTimePreview');
-      const previewHours = document.getElementById('previewHours');
-      
-      if (hobbs && currentStatus.hobbs) {
-        const flightTime = hobbs - currentStatus.hobbs;
-        if (flightTime > 0 && flightTime <= 10) {
-          previewHours.textContent = flightTime.toFixed(1);
-          preview.classList.remove('hidden');
-          return;
-        }
-      }
-      preview.classList.add('hidden');
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').textContent = message;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 3000);
+    }
+
+    function showError(message) {
+      const error = document.getElementById('error');
+      document.getElementById('errorMessage').textContent = message;
+      error.classList.remove('hidden');
+      setTimeout(() => error.classList.add('hidden'), 5000);
     }
 
     // =========================================================================
     // FORM SUBMISSIONS
     // =========================================================================
     async function submitFlight() {
-      const btn = document.getElementById('btnSubmit');
+      const btn = document.getElementById('btnFlight');
       btn.disabled = true;
-      btn.textContent = 'Logging...';
+      btn.textContent = 'Saving...';
+
+      const isFerry = document.getElementById('ferryFlight').checked;
+
+      const data = {
+        type: 'flight',
+        pilot: document.getElementById('pilot').value,
+        fuelLeft: document.getElementById('fuelLeft').value,
+        fuelRight: document.getElementById('fuelRight').value,
+        hobbs: document.getElementById('hobbs').value,
+        route: document.getElementById('route').value,
+        comments: document.getElementById('comments').value,
+        ferry: isFerry
+      };
 
       try {
         const response = await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
-          body: JSON.stringify({
-            type: 'flight',
-            pilot: 'mat',
-            fuelLeft: document.getElementById('fuelLeft').value,
-            fuelRight: document.getElementById('fuelRight').value,
-            hobbs: document.getElementById('hobbs').value,
-            route: document.getElementById('route').value,
-            comments: document.getElementById('comments').value
-          })
+          body: JSON.stringify(data)
         });
         const result = await response.json();
         
@@ -484,39 +545,77 @@
           showToast(result.result);
           currentStatus = result.status;
           updateStatusDisplay();
+          // Clear form
           document.getElementById('fuelLeft').value = '';
           document.getElementById('fuelRight').value = '';
           document.getElementById('hobbs').value = '';
           document.getElementById('route').value = '';
           document.getElementById('comments').value = '';
+          document.getElementById('ferryFlight').checked = false;
           document.getElementById('flightTimePreview').classList.add('hidden');
         } else {
           showError(result.error);
         }
       } catch (error) {
-        showError('Failed to log flight: ' + error.message);
+        showError('Failed to save: ' + error.message);
       }
 
       btn.disabled = false;
       btn.textContent = 'Log Flight';
     }
 
-    async function submitReceipt() {
-      const btn = document.getElementById('btnReceipt');
-      const amount = document.getElementById('receiptAmount').value;
-      if (!amount) return;
+    async function submitOil() {
+      const quarts = document.getElementById('oilQuarts').value;
+      if (!quarts) return;
 
+      const btn = document.getElementById('btnOil');
       btn.disabled = true;
+
+      const data = {
+        type: 'oil',
+        pilot: document.getElementById('pilot').value,
+        quarts: quarts
+      };
 
       try {
         const response = await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
-          body: JSON.stringify({
-            type: 'receipt',
-            pilot: 'mat',
-            amount: amount,
-            note: document.getElementById('receiptNote').value
-          })
+          body: JSON.stringify(data)
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+          showToast(result.result);
+          document.getElementById('oilQuarts').value = '';
+        } else {
+          showError(result.error);
+        }
+      } catch (error) {
+        showError('Failed to save: ' + error.message);
+      }
+
+      btn.disabled = false;
+    }
+
+    async function submitReceipt() {
+      const amount = document.getElementById('receiptAmount').value;
+      if (!amount) return;
+
+      const btn = document.getElementById('btnReceipt');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      const data = {
+        type: 'receipt',
+        pilot: document.getElementById('pilot').value,
+        amount: amount,
+        note: document.getElementById('receiptNote').value
+      };
+
+      try {
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify(data)
         });
         const result = await response.json();
         
@@ -528,72 +627,44 @@
           showError(result.error);
         }
       } catch (error) {
-        showError('Failed to log receipt: ' + error.message);
+        showError('Failed to save: ' + error.message);
       }
 
       btn.disabled = false;
-    }
-
-    async function submitOil() {
-      const btn = document.getElementById('btnOil');
-      const quarts = document.getElementById('oilQuarts').value;
-      if (!quarts) return;
-
-      btn.disabled = true;
-
-      try {
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify({
-            type: 'oil',
-            pilot: 'mat',
-            quarts: quarts
-          })
-        });
-        const result = await response.json();
-        
-        if (result.success) {
-          showToast(result.result);
-          document.getElementById('oilQuarts').value = '';
-        } else {
-          showError(result.error);
-        }
-      } catch (error) {
-        showError('Failed to log oil: ' + error.message);
-      }
-
-      btn.disabled = false;
+      btn.textContent = 'Save Receipt';
     }
 
     async function submitSquawk() {
-      const btn = document.getElementById('btnSquawk');
       const text = document.getElementById('squawkText').value;
       if (!text) return;
 
+      const btn = document.getElementById('btnSquawk');
       btn.disabled = true;
-      btn.textContent = 'Adding...';
+      btn.textContent = 'Saving...';
+
+      const data = {
+        type: 'squawk',
+        pilot: document.getElementById('pilot').value,
+        text: text
+      };
 
       try {
         const response = await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
-          body: JSON.stringify({
-            type: 'squawk',
-            pilot: 'mat',
-            text: text
-          })
+          body: JSON.stringify(data)
         });
         const result = await response.json();
         
         if (result.success) {
           showToast(result.result);
-          document.getElementById('squawkText').value = '';
           currentStatus = result.status;
-          updateSquawkList();
+          updateStatusDisplay();
+          document.getElementById('squawkText').value = '';
         } else {
           showError(result.error);
         }
       } catch (error) {
-        showError('Failed to add squawk: ' + error.message);
+        showError('Failed to save: ' + error.message);
       }
 
       btn.disabled = false;
@@ -606,7 +677,7 @@
     
     async function loadPilotReport() {
       try {
-        const response = await fetch(APPS_SCRIPT_URL + '?action=pilotReport&pilot=mat');
+        const response = await fetch(APPS_SCRIPT_URL + '?action=pilotReport&pilot=' + currentPilot);
         const data = await response.json();
         
         if (data.success && data.report) {
@@ -615,14 +686,16 @@
           document.getElementById('report365').textContent = data.report.last365.toFixed(1) + ' hrs';
           document.getElementById('reportTotal').textContent = data.report.total.toFixed(1) + ' hrs';
           
+          // Update oil change display
           document.getElementById('oilChangeDueDisplay').textContent = data.status.oilChangeDue.toFixed(1);
           const remaining = data.status.oilChangeDue - data.status.hobbs;
           const remainingEl = document.getElementById('oilChangeRemaining');
           remainingEl.textContent = remaining.toFixed(1);
           remainingEl.className = `font-mono ${remaining < 5 ? 'text-red-400' : 'text-green-400'}`;
           
+          // Update annual date input
           if (data.status.annualDue) {
-            document.getElementById('annualDate').value = data.status.annualDue.split('T')[0];
+            document.getElementById('annualDate').value = data.status.annualDue;
           }
         }
       } catch (error) {
@@ -641,7 +714,9 @@
       
       const currentL = currentStatus.fuelLeft;
       const currentR = currentStatus.fuelRight;
+      const currentTotal = currentL + currentR;
       
+      // Calculate how much to add to each tank (split evenly, round up)
       const targetPerTank = target / 2;
       const addL = Math.max(0, Math.ceil(targetPerTank - currentL));
       const addR = Math.max(0, Math.ceil(targetPerTank - currentR));
@@ -665,7 +740,7 @@
           method: 'POST',
           body: JSON.stringify({
             type: 'oilchange',
-            pilot: 'mat',
+            pilot: currentPilot,
             hours: parseFloat(hours)
           })
         });
@@ -674,7 +749,7 @@
         if (result.success) {
           showToast(result.result);
           document.getElementById('oilChangeHours').value = '';
-          loadPilotReport();
+          loadPilotReport(); // Refresh display
         } else {
           showError(result.error);
         }
@@ -692,7 +767,7 @@
           method: 'POST',
           body: JSON.stringify({
             type: 'annual',
-            pilot: 'mat',
+            pilot: currentPilot,
             date: date
           })
         });
@@ -708,31 +783,6 @@
       } catch (error) {
         showError('Failed to set annual: ' + error.message);
       }
-    }
-
-    // =========================================================================
-    // NOTIFICATIONS
-    // =========================================================================
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      const toastMessage = document.getElementById('toastMessage');
-      toast.className = 'fixed bottom-4 left-4 right-4 bg-green-600 text-white px-4 py-3 rounded-xl shadow-lg transform translate-y-0 transition-transform duration-300 z-50';
-      toastMessage.textContent = message;
-      
-      setTimeout(() => {
-        toast.className = 'fixed bottom-4 left-4 right-4 bg-green-600 text-white px-4 py-3 rounded-xl shadow-lg transform translate-y-full transition-transform duration-300 z-50';
-      }, 3000);
-    }
-
-    function showError(message) {
-      const toast = document.getElementById('toast');
-      const toastMessage = document.getElementById('toastMessage');
-      toast.className = 'fixed bottom-4 left-4 right-4 bg-red-600 text-white px-4 py-3 rounded-xl shadow-lg transform translate-y-0 transition-transform duration-300 z-50';
-      toastMessage.textContent = message;
-      
-      setTimeout(() => {
-        toast.className = 'fixed bottom-4 left-4 right-4 bg-red-600 text-white px-4 py-3 rounded-xl shadow-lg transform translate-y-full transition-transform duration-300 z-50';
-      }, 5000);
     }
   </script>
 </body>
