@@ -75,7 +75,6 @@
     <div id="panelLog" class="space-y-4">
       <input type="hidden" id="pilot" value="mat">
       
-      <!-- Fuel Entry -->
       <div class="bg-slate-800 rounded-xl p-4">
         <h3 class="font-medium mb-3 flex items-center gap-2">
           <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,7 +96,6 @@
         </div>
       </div>
 
-      <!-- Hobbs Entry -->
       <div class="bg-slate-800 rounded-xl p-4">
         <h3 class="font-medium mb-3 flex items-center gap-2">
           <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -113,7 +111,6 @@
         </div>
       </div>
 
-      <!-- Route & Comments (Optional) -->
       <div class="bg-slate-800 rounded-xl p-4">
         <h3 class="font-medium mb-3 flex items-center gap-2">
           <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -127,7 +124,6 @@
                class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 focus:border-blue-500 focus:outline-none">
       </div>
 
-      <!-- Submit Button -->
       <button onclick="submitFlight()" id="btnSubmit"
               class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 rounded-xl px-4 py-3 font-medium text-lg transition">
         Log Flight
@@ -136,7 +132,6 @@
 
     <!-- Extras Tab (Receipts) -->
     <div id="panelExtras" class="space-y-4 hidden">
-      <!-- Receipt Entry -->
       <div class="bg-slate-800 rounded-xl p-4">
         <h3 class="font-medium flex items-center gap-2 mb-3">
           <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,7 +156,6 @@
 
     <!-- Squawks Tab -->
     <div id="panelSquawks" class="space-y-4 hidden">
-      <!-- New Squawk -->
       <div class="bg-slate-800 rounded-xl p-4">
         <h3 class="font-medium flex items-center gap-2 mb-3">
           <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -179,7 +173,6 @@
         </div>
       </div>
 
-      <!-- Squawk List -->
       <div class="bg-slate-800 rounded-xl p-4">
         <h3 class="font-medium mb-3">Open Squawks</h3>
         <div id="squawkList" class="space-y-2">
@@ -219,6 +212,29 @@
         <button onclick="loadPilotReport()" class="w-full mt-3 bg-slate-700 hover:bg-slate-600 rounded-lg py-2 text-sm">
           Refresh Report
         </button>
+        
+        <!-- Recent Flights Collapsible -->
+        <div class="mt-4 pt-4 border-t border-slate-700">
+          <button onclick="toggleRecentFlights()" 
+                  class="w-full flex items-center justify-between text-left">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <span class="text-slate-300 font-medium">Recent Flights</span>
+              <span id="recentFlightsCount" class="text-xs text-slate-500 bg-slate-600 px-2 py-0.5 rounded-full">--</span>
+            </div>
+            <svg id="recentFlightsChevron" class="w-5 h-5 text-slate-400 transition-transform duration-200" 
+                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          
+          <div id="recentFlightsContent" class="hidden mt-3">
+            <div id="recentFlightsList" class="space-y-2"></div>
+          </div>
+        </div>
       </div>
 
       <!-- Fuel Calculator -->
@@ -259,7 +275,6 @@
           Oil
         </h3>
         <div class="space-y-3">
-          <!-- Add Oil -->
           <div class="flex gap-2">
             <input type="number" id="oilQuarts" step="0.5" placeholder="Add quarts"
                    class="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 focus:border-blue-500 focus:outline-none">
@@ -268,7 +283,6 @@
               Add
             </button>
           </div>
-          <!-- Oil Change Due -->
           <div class="bg-slate-700 rounded-lg p-3 text-sm">
             <div class="flex justify-between mb-2">
               <span class="text-slate-400">Oil Change Due</span>
@@ -315,35 +329,19 @@
   </div>
 
   <script>
-    // =========================================================================
-    // CONFIGURATION - UPDATE THIS URL AFTER DEPLOYING APPS SCRIPT
-    // =========================================================================
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx6g4v4ZqyUzxY-bJ9CsKJH15zZoclznFHdqIrm_mM7n2o38bwvPnaPHSTgX1kSRm7t6A/exec';
-
-    // =========================================================================
-    // STATE
-    // =========================================================================
+    
     let currentStatus = { hobbs: 0, fuelLeft: 0, fuelRight: 0, oilChangeDue: 0, annualDue: '', squawks: [] };
     let currentPilot = 'mat';
+    let recentFlightsData = [];
 
-    // =========================================================================
-    // INITIALIZATION
-    // =========================================================================
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('pilot').value = 'mat';
       document.getElementById('pilotBadge').textContent = 'Mat';
-      
       loadStatus();
-      
-      // Auto-refresh every 60 seconds
-      setInterval(() => {
-        loadStatus();
-      }, 60000);
+      setInterval(() => loadStatus(), 60000);
     });
 
-    // =========================================================================
-    // STATUS
-    // =========================================================================
     async function loadStatus() {
       try {
         const response = await fetch(APPS_SCRIPT_URL);
@@ -351,27 +349,12 @@
         if (data.success) {
           currentStatus = data.status;
           updateStatusDisplay();
-          
-          // Update last update display
+          if (data.recentFlights) recentFlightsData = data.recentFlights;
           if (data.lastUpdate) {
-            const lastUpdateRow = document.getElementById('lastUpdateRow');
-            const lastUpdateText = document.getElementById('lastUpdateText');
             const hoursAgo = data.lastUpdate.hoursAgo;
-            
-            let timeText;
-            if (hoursAgo === 0) {
-              timeText = 'just now';
-            } else if (hoursAgo === 1) {
-              timeText = '1 hour ago';
-            } else if (hoursAgo < 24) {
-              timeText = `${hoursAgo} hours ago`;
-            } else {
-              const daysAgo = Math.floor(hoursAgo / 24);
-              timeText = daysAgo === 1 ? '1 day ago' : `${daysAgo} days ago`;
-            }
-            
-            lastUpdateText.textContent = `Last flight: ${timeText}`;
-            lastUpdateRow.classList.remove('hidden');
+            let timeText = hoursAgo === 0 ? 'just now' : hoursAgo === 1 ? '1 hour ago' : hoursAgo < 24 ? `${hoursAgo} hours ago` : Math.floor(hoursAgo / 24) === 1 ? '1 day ago' : `${Math.floor(hoursAgo / 24)} days ago`;
+            document.getElementById('lastUpdateText').textContent = `Last flight: ${timeText}`;
+            document.getElementById('lastUpdateRow').classList.remove('hidden');
           }
         }
       } catch (error) {
@@ -380,23 +363,61 @@
       }
     }
 
+    function toggleRecentFlights() {
+      const content = document.getElementById('recentFlightsContent');
+      const chevron = document.getElementById('recentFlightsChevron');
+      if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        chevron.style.transform = 'rotate(180deg)';
+        renderRecentFlights(recentFlightsData);
+      } else {
+        content.classList.add('hidden');
+        chevron.style.transform = 'rotate(0deg)';
+      }
+    }
+
+    function renderRecentFlights(flights) {
+      const container = document.getElementById('recentFlightsList');
+      const countBadge = document.getElementById('recentFlightsCount');
+      if (!flights || flights.length === 0) {
+        container.innerHTML = '<div class="text-slate-500 text-sm">No flights logged yet</div>';
+        countBadge.textContent = '0';
+        return;
+      }
+      countBadge.textContent = flights.length;
+      container.innerHTML = flights.map(flight => {
+        const date = new Date(flight.timestamp);
+        const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined });
+        const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        const hours = flight.flightHours ? flight.flightHours.toFixed(1) : '--';
+        return `
+          <div class="bg-slate-700 rounded-lg p-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2 text-sm">
+                <span class="text-slate-300">${dateStr}</span>
+                <span class="text-slate-500">${timeStr}</span>
+              </div>
+              <span class="font-mono text-blue-400 font-medium">${hours} hrs</span>
+            </div>
+            <div class="flex items-center justify-between mt-1 text-xs text-slate-500">
+              <div>Hobbs: <span class="text-slate-400 font-mono">${flight.hobbs ? flight.hobbs.toFixed(1) : '--'}</span></div>
+              <div>Fuel: <span class="text-slate-400 font-mono">${flight.fuelLeft || '--'}L / ${flight.fuelRight || '--'}R</span></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
     function updateStatusDisplay() {
       document.getElementById('statusHobbs').textContent = currentStatus.hobbs?.toFixed(1) || '--';
-      document.getElementById('statusFuel').textContent = 
-        ((currentStatus.fuelLeft || 0) + (currentStatus.fuelRight || 0)) || '--';
-      
+      document.getElementById('statusFuel').textContent = ((currentStatus.fuelLeft || 0) + (currentStatus.fuelRight || 0)) || '--';
       const oilRemaining = (currentStatus.oilChangeDue || 0) - (currentStatus.hobbs || 0);
       document.getElementById('statusOil').textContent = oilRemaining > 0 ? oilRemaining.toFixed(0) : '--';
-      
-      document.getElementById('statusFuelDetail').textContent = 
-        `Fuel: L ${currentStatus.fuelLeft || '--'} / R ${currentStatus.fuelRight || '--'}`;
-      
+      document.getElementById('statusFuelDetail').textContent = `Fuel: L ${currentStatus.fuelLeft || '--'} / R ${currentStatus.fuelRight || '--'}`;
       if (currentStatus.annualDue) {
         const annualDate = new Date(currentStatus.annualDue);
-        document.getElementById('statusAnnual').textContent = 
-          `Annual: ${annualDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`;
+        document.getElementById('statusAnnual').textContent = `Annual: ${annualDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`;
       }
-      
       updateSquawkList();
     }
 
@@ -406,7 +427,6 @@
         list.innerHTML = '<p class="text-slate-400 text-sm">No open squawks</p>';
         return;
       }
-      
       list.innerHTML = currentStatus.squawks.map(s => `
         <div class="bg-slate-700 rounded-lg p-2 text-sm">
           <div class="text-slate-400 text-xs">${s.date}</div>
@@ -415,37 +435,20 @@
       `).join('');
     }
 
-    // =========================================================================
-    // TAB NAVIGATION
-    // =========================================================================
     function showTab(tab) {
-      document.getElementById('panelLog').classList.add('hidden');
-      document.getElementById('panelExtras').classList.add('hidden');
-      document.getElementById('panelSquawks').classList.add('hidden');
-      document.getElementById('panelReports').classList.add('hidden');
-      
-      document.getElementById('tabLog').className = 'flex-1 py-2 px-3 rounded-md text-sm font-medium transition text-slate-400 hover:text-white';
-      document.getElementById('tabExtras').className = 'flex-1 py-2 px-3 rounded-md text-sm font-medium transition text-slate-400 hover:text-white';
-      document.getElementById('tabSquawks').className = 'flex-1 py-2 px-3 rounded-md text-sm font-medium transition text-slate-400 hover:text-white';
-      document.getElementById('tabReports').className = 'flex-1 py-2 px-3 rounded-md text-sm font-medium transition text-slate-400 hover:text-white';
-      
+      ['Log', 'Extras', 'Squawks', 'Reports'].forEach(t => {
+        document.getElementById('panel' + t).classList.add('hidden');
+        document.getElementById('tab' + t).className = 'flex-1 py-2 px-3 rounded-md text-sm font-medium transition text-slate-400 hover:text-white';
+      });
       document.getElementById('panel' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.remove('hidden');
-      document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).className = 
-        'flex-1 py-2 px-3 rounded-md text-sm font-medium transition bg-blue-600 text-white';
-      
-      if (tab === 'reports') {
-        loadPilotReport();
-      }
+      document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).className = 'flex-1 py-2 px-3 rounded-md text-sm font-medium transition bg-blue-600 text-white';
+      if (tab === 'reports') loadPilotReport();
     }
 
-    // =========================================================================
-    // FLIGHT TIME PREVIEW
-    // =========================================================================
     function updateFlightTimePreview() {
       const hobbs = parseFloat(document.getElementById('hobbs').value);
       const preview = document.getElementById('flightTimePreview');
       const previewHours = document.getElementById('previewHours');
-      
       if (hobbs && currentStatus.hobbs) {
         const flightTime = hobbs - currentStatus.hobbs;
         if (flightTime > 0 && flightTime <= 10) {
@@ -457,20 +460,15 @@
       preview.classList.add('hidden');
     }
 
-    // =========================================================================
-    // FORM SUBMISSIONS
-    // =========================================================================
     async function submitFlight() {
       const btn = document.getElementById('btnSubmit');
       btn.disabled = true;
       btn.textContent = 'Logging...';
-
       try {
         const response = await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
           body: JSON.stringify({
-            type: 'flight',
-            pilot: 'mat',
+            type: 'flight', pilot: 'mat',
             fuelLeft: document.getElementById('fuelLeft').value,
             fuelRight: document.getElementById('fuelRight').value,
             hobbs: document.getElementById('hobbs').value,
@@ -479,24 +477,15 @@
           })
         });
         const result = await response.json();
-        
         if (result.success) {
           showToast(result.result);
           currentStatus = result.status;
           updateStatusDisplay();
-          document.getElementById('fuelLeft').value = '';
-          document.getElementById('fuelRight').value = '';
-          document.getElementById('hobbs').value = '';
-          document.getElementById('route').value = '';
-          document.getElementById('comments').value = '';
+          loadStatus();
+          ['fuelLeft', 'fuelRight', 'hobbs', 'route', 'comments'].forEach(id => document.getElementById(id).value = '');
           document.getElementById('flightTimePreview').classList.add('hidden');
-        } else {
-          showError(result.error);
-        }
-      } catch (error) {
-        showError('Failed to log flight: ' + error.message);
-      }
-
+        } else { showError(result.error); }
+      } catch (error) { showError('Failed to log flight: ' + error.message); }
       btn.disabled = false;
       btn.textContent = 'Log Flight';
     }
@@ -505,32 +494,12 @@
       const btn = document.getElementById('btnReceipt');
       const amount = document.getElementById('receiptAmount').value;
       if (!amount) return;
-
       btn.disabled = true;
-
       try {
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify({
-            type: 'receipt',
-            pilot: 'mat',
-            amount: amount,
-            note: document.getElementById('receiptNote').value
-          })
-        });
+        const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ type: 'receipt', pilot: 'mat', amount, note: document.getElementById('receiptNote').value }) });
         const result = await response.json();
-        
-        if (result.success) {
-          showToast(result.result);
-          document.getElementById('receiptAmount').value = '';
-          document.getElementById('receiptNote').value = '';
-        } else {
-          showError(result.error);
-        }
-      } catch (error) {
-        showError('Failed to log receipt: ' + error.message);
-      }
-
+        if (result.success) { showToast(result.result); document.getElementById('receiptAmount').value = ''; document.getElementById('receiptNote').value = ''; } else { showError(result.error); }
+      } catch (error) { showError('Failed to log receipt: ' + error.message); }
       btn.disabled = false;
     }
 
@@ -538,30 +507,12 @@
       const btn = document.getElementById('btnOil');
       const quarts = document.getElementById('oilQuarts').value;
       if (!quarts) return;
-
       btn.disabled = true;
-
       try {
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify({
-            type: 'oil',
-            pilot: 'mat',
-            quarts: quarts
-          })
-        });
+        const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ type: 'oil', pilot: 'mat', quarts }) });
         const result = await response.json();
-        
-        if (result.success) {
-          showToast(result.result);
-          document.getElementById('oilQuarts').value = '';
-        } else {
-          showError(result.error);
-        }
-      } catch (error) {
-        showError('Failed to log oil: ' + error.message);
-      }
-
+        if (result.success) { showToast(result.result); document.getElementById('oilQuarts').value = ''; } else { showError(result.error); }
+      } catch (error) { showError('Failed to log oil: ' + error.message); }
       btn.disabled = false;
     }
 
@@ -569,170 +520,85 @@
       const btn = document.getElementById('btnSquawk');
       const text = document.getElementById('squawkText').value;
       if (!text) return;
-
       btn.disabled = true;
       btn.textContent = 'Adding...';
-
       try {
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify({
-            type: 'squawk',
-            pilot: 'mat',
-            text: text
-          })
-        });
+        const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ type: 'squawk', pilot: 'mat', text }) });
         const result = await response.json();
-        
-        if (result.success) {
-          showToast(result.result);
-          document.getElementById('squawkText').value = '';
-          currentStatus = result.status;
-          updateSquawkList();
-        } else {
-          showError(result.error);
-        }
-      } catch (error) {
-        showError('Failed to add squawk: ' + error.message);
-      }
-
+        if (result.success) { showToast(result.result); document.getElementById('squawkText').value = ''; currentStatus = result.status; updateSquawkList(); } else { showError(result.error); }
+      } catch (error) { showError('Failed to add squawk: ' + error.message); }
       btn.disabled = false;
       btn.textContent = 'Add Squawk';
     }
 
-    // =========================================================================
-    // PILOT REPORT & SETTINGS
-    // =========================================================================
-    
     async function loadPilotReport() {
       try {
         const response = await fetch(APPS_SCRIPT_URL + '?action=pilotReport&pilot=mat');
         const data = await response.json();
-        
         if (data.success && data.report) {
           document.getElementById('report30').textContent = data.report.last30.toFixed(1) + ' hrs';
           document.getElementById('report90').textContent = data.report.last90.toFixed(1) + ' hrs';
           document.getElementById('report365').textContent = data.report.last365.toFixed(1) + ' hrs';
           document.getElementById('reportTotal').textContent = data.report.total.toFixed(1) + ' hrs';
-          
           document.getElementById('oilChangeDueDisplay').textContent = data.status.oilChangeDue.toFixed(1);
           const remaining = data.status.oilChangeDue - data.status.hobbs;
           const remainingEl = document.getElementById('oilChangeRemaining');
           remainingEl.textContent = remaining.toFixed(1);
           remainingEl.className = `font-mono ${remaining < 5 ? 'text-red-400' : 'text-green-400'}`;
-          
-          if (data.status.annualDue) {
-            document.getElementById('annualDate').value = data.status.annualDue.split('T')[0];
-          }
+          if (data.status.annualDue) document.getElementById('annualDate').value = data.status.annualDue.split('T')[0];
+          if (data.recentFlights) { recentFlightsData = data.recentFlights; document.getElementById('recentFlightsCount').textContent = data.recentFlights.length; }
         }
-      } catch (error) {
-        console.error('Failed to load pilot report:', error);
-      }
+      } catch (error) { console.error('Failed to load pilot report:', error); }
     }
 
     function calculateFuel() {
       const target = parseFloat(document.getElementById('fuelTarget').value);
       const resultDiv = document.getElementById('fuelCalcResult');
-      
-      if (!target || target <= 0) {
-        resultDiv.classList.add('hidden');
-        return;
-      }
-      
-      const currentL = currentStatus.fuelLeft;
-      const currentR = currentStatus.fuelRight;
-      
+      if (!target || target <= 0) { resultDiv.classList.add('hidden'); return; }
+      const currentL = currentStatus.fuelLeft, currentR = currentStatus.fuelRight;
       const targetPerTank = target / 2;
-      const addL = Math.max(0, Math.ceil(targetPerTank - currentL));
-      const addR = Math.max(0, Math.ceil(targetPerTank - currentR));
-      
+      const addL = Math.max(0, Math.ceil(targetPerTank - currentL)), addR = Math.max(0, Math.ceil(targetPerTank - currentR));
       document.getElementById('calcCurrentL').textContent = currentL;
       document.getElementById('calcCurrentR').textContent = currentR;
       document.getElementById('calcAddL').textContent = addL;
       document.getElementById('calcAddR').textContent = addR;
       document.getElementById('calcNewL').textContent = currentL + addL;
       document.getElementById('calcNewR').textContent = currentR + addR;
-      
       resultDiv.classList.remove('hidden');
     }
 
     async function setOilChange() {
       const hours = document.getElementById('oilChangeHours').value;
       if (!hours) return;
-
       try {
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify({
-            type: 'oilchange',
-            pilot: 'mat',
-            hours: parseFloat(hours)
-          })
-        });
+        const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ type: 'oilchange', pilot: 'mat', hours: parseFloat(hours) }) });
         const result = await response.json();
-        
-        if (result.success) {
-          showToast(result.result);
-          document.getElementById('oilChangeHours').value = '';
-          loadPilotReport();
-        } else {
-          showError(result.error);
-        }
-      } catch (error) {
-        showError('Failed to set oil change: ' + error.message);
-      }
+        if (result.success) { showToast(result.result); document.getElementById('oilChangeHours').value = ''; loadPilotReport(); } else { showError(result.error); }
+      } catch (error) { showError('Failed to set oil change: ' + error.message); }
     }
 
     async function setAnnual() {
       const date = document.getElementById('annualDate').value;
       if (!date) return;
-
       try {
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify({
-            type: 'annual',
-            pilot: 'mat',
-            date: date
-          })
-        });
+        const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ type: 'annual', pilot: 'mat', date }) });
         const result = await response.json();
-        
-        if (result.success) {
-          showToast(result.result);
-          currentStatus.annualDue = date;
-          updateStatusDisplay();
-        } else {
-          showError(result.error);
-        }
-      } catch (error) {
-        showError('Failed to set annual: ' + error.message);
-      }
+        if (result.success) { showToast(result.result); currentStatus.annualDue = date; updateStatusDisplay(); } else { showError(result.error); }
+      } catch (error) { showError('Failed to set annual: ' + error.message); }
     }
 
-    // =========================================================================
-    // NOTIFICATIONS
-    // =========================================================================
     function showToast(message) {
       const toast = document.getElementById('toast');
-      const toastMessage = document.getElementById('toastMessage');
+      document.getElementById('toastMessage').textContent = message;
       toast.className = 'fixed bottom-4 left-4 right-4 bg-green-600 text-white px-4 py-3 rounded-xl shadow-lg transform translate-y-0 transition-transform duration-300 z-50';
-      toastMessage.textContent = message;
-      
-      setTimeout(() => {
-        toast.className = 'fixed bottom-4 left-4 right-4 bg-green-600 text-white px-4 py-3 rounded-xl shadow-lg transform translate-y-full transition-transform duration-300 z-50';
-      }, 3000);
+      setTimeout(() => { toast.className = 'fixed bottom-4 left-4 right-4 bg-green-600 text-white px-4 py-3 rounded-xl shadow-lg transform translate-y-full transition-transform duration-300 z-50'; }, 3000);
     }
 
     function showError(message) {
       const toast = document.getElementById('toast');
-      const toastMessage = document.getElementById('toastMessage');
+      document.getElementById('toastMessage').textContent = message;
       toast.className = 'fixed bottom-4 left-4 right-4 bg-red-600 text-white px-4 py-3 rounded-xl shadow-lg transform translate-y-0 transition-transform duration-300 z-50';
-      toastMessage.textContent = message;
-      
-      setTimeout(() => {
-        toast.className = 'fixed bottom-4 left-4 right-4 bg-red-600 text-white px-4 py-3 rounded-xl shadow-lg transform translate-y-full transition-transform duration-300 z-50';
-      }, 5000);
+      setTimeout(() => { toast.className = 'fixed bottom-4 left-4 right-4 bg-red-600 text-white px-4 py-3 rounded-xl shadow-lg transform translate-y-full transition-transform duration-300 z-50'; }, 5000);
     }
   </script>
 </body>
